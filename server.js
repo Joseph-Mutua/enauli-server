@@ -1,11 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const morgan = require("morgan");
-const bodyParser = require("body-parser");
-const cors = require("cors");
+const morgan = require("morgan"); //Log api requests to console
+const bodyParser = require("body-parser"); //parse json data passed from client to an object and append it to request body
+const cors = require("cors"); //Avoid cors error due to server and client runnning on different ports
 
 // Routes
-const authRoutes = require("./routes/authRoutes")
+const authRoutes = require("./routes/authRoutes");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -31,8 +31,7 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cors());
 
 //Routes middleware
-app.use("/api", authRoutes)
-
+app.use("/api", authRoutes);
 
 //Port
 const port = process.env.PORT;
