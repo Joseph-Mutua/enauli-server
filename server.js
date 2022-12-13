@@ -31,7 +31,7 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cors());
 
 //Routes middleware
-app.use("/api", authRoutes);
+app.use(authRoutes);
 
 //Port
 const port = process.env.PORT;
