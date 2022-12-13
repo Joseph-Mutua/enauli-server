@@ -8,7 +8,7 @@ exports.signup = () => (req, res) => {
   User.findOne({ phoneNumber }).exec((err, user) => {
     if (user) {
       return res.status(400).json({
-        error: "User alredy exists!",
+        error: "User already exists!",
       });
     }
   });
