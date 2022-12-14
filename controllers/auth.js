@@ -31,7 +31,7 @@ exports.signup = (req, res) => {
         error: err,
       });
     }
-    res.json({
+    return res.json({
       message: "Signup success! Please signin",
     });
   });
@@ -115,9 +115,8 @@ exports.update = (req, res) => {
 
 exports.forgotPassword = async (req, res) => {
   const user = await User.findOne({
-    number: req.body.number,
+    phoneNumber: req.body.phoneNumber,
   });
-  if (user) return res.status(400).send("User already registered!");
   const OTP = otpGenerator.generate(6, {
     digits: true,
     alphabets: false,
@@ -125,27 +124,20 @@ exports.forgotPassword = async (req, res) => {
     specialChars: false,
   });
 
-  const number = req.body.number;
-
-  // const greenwebsms = new URLSearchParams();
-  // greenwebsms.append("token", "05fa33c4cb50c35f4a258e85ccf50509");
-  // greenwebsms.append("to", `+${number}`);
-  // greenwebsms.append("message", `Verification Code ${OTP}`);
-  // axios
-  //   .post("http://api.greenweb.com.bd/api.php", greenwebsms)
-  //   .then((response) => {
-  //     console.log(response.data);
-  //   });
+  const phoneNumber = req.body.phoneNumber;
 
   client.messages
     .create({
       body: `Your verification code is: ${OTP}`,
       messagingServiceSid: "MG74b4e4f0f680fb0d779a4dd046bf13ae",
-      to: number,
+      to: `${phoneNumber}`,
     })
     .then((message) => console.log(message.sid))
+    .catch((err) => {
+      console.log(err);
+    })
     .done();
-  const otp = new Otp({ number: number, otp: OTP });
+  const otp = new Otp({ phoneNumber: phoneNumber, otp: OTP });
   const salt = await bcrypt.genSalt(10);
   otp.otp = await bcrypt.hash(otp.otp, salt);
   const result = await otp.save();
@@ -162,18 +154,18 @@ exports.resetPassword = async (req, res) => {
   const rightOtpFind = otpHolder[otpHolder.length - 1];
   const validUser = await bcrypt.compare(req.body.otp, rightOtpFind.otp);
 
-  if (rightOtpFind.number === req.body.number && validUser) {
+  if (rightOtpFind.phoneNumber === req.body.phoneNumber && validUser) {
     if (password) {
       if (password.length < 4) {
         return res.status(400).json({
           error: "Password should be min 4 characters long",
         });
       } else {
-        user.password = password;
+        rightOtpFind.password = password;
       }
     }
 
-    user.save((err, updatedUser) => {
+    rightOtpFind.save((err, updatedUser) => {
       if (err) {
         console.log("PASSWORD REST ERROR ERROR", err);
         return res.status(400).json({
@@ -183,12 +175,11 @@ exports.resetPassword = async (req, res) => {
       updatedUser.hashed_password = undefined;
       updatedUser.salt = undefined;
 
-    Otp.deleteMany({
-      number: rightOtpFind.number,
-    });
+      Otp.deleteMany({
+        phoneNumber: rightOtpFind.phoneNumber,
+      });
       res.json(updatedUser);
     });
-
   } else {
     return res.status(400).send("Your OTP was wrong!");
   }
