@@ -20,4 +20,4 @@ const operatorSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Vehicle", operatorSchema);
+module.exports = mongoose.model("Operator", operatorSchema);

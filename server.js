@@ -8,7 +8,11 @@ dotenv.config();
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
-
+const saccoRoutes = require("./routes/saccoRoutes")
+const officialRoutes = require("./routes/officialRoutes");
+const stationRoutes = require("./routes/stationRoutes");
+const vehicleRoutes = require("./routes/vehicleRoutes");
+const operatorRoutes = require("./routes/operatorRoutes");
 //app
 const app = express();
 

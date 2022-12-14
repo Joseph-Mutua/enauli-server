@@ -1,4 +1,5 @@
 const Vehicle = require("../models/vehicle");
+const Operator = require("../models/operator");
 const slugify = require("slugify");
 
 exports.create = async (req, res) => {
@@ -52,4 +53,11 @@ exports.remove = async (req, res) => {
     console.log(err);
     res.status(400).send("Vehicle delete failed!");
   }
+};
+exports.getOperators = (req, res) => {
+  Operator.find({ parent: req.params._id }).exec((err, operators) => {
+    if (err) console.log(err);
+    res.json(operators);
+    console.log(operators);
+  });
 };

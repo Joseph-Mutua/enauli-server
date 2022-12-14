@@ -26,4 +26,4 @@ const stationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Official", stationSchema);
+module.exports = mongoose.model("Station", stationSchema);
