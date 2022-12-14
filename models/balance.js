@@ -1,13 +1,8 @@
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema;
 
-const chargeSchema = new mongoose.Schema(
+const balanceSchema = new mongoose.Schema(
   {
-    type: {
-      type: String,
-      trim: true,
-      required: true,
-    },
     amount: {
       type: Number,
       default: 0.0,
@@ -18,4 +13,4 @@ const chargeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Balance", chargeSchema);
+module.exports = mongoose.model("Balance", balanceSchema);
