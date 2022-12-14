@@ -1,45 +1,40 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const _ = require("lodash");
+const otpGenerator = require("otp-generator");
+
 const User = require("../models/user");
+const Otp = require("../models/otp");
 
 const twilioAccountSid = process.env.TWILIO_SID;
 const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require("twilio")(twilioAccountSid, twilioAuthToken);
 
-client.messages
-  .create({
-    body: "yOOOOO",
-    messagingServiceSid: "MG74b4e4f0f680fb0d779a4dd046bf13ae",
-    to: "+254713453630",
-  })
-  .then((message) => console.log(message.sid))
-  .done();
-
-
 exports.signup = (req, res) => {
-    console.log('REQ BODY ON SIGNUP', req.body);
-    const { phoneNumber, password } = req.body;
+  console.log("REQ BODY ON SIGNUP", req.body);
+  const { phoneNumber, password } = req.body;
 
-    User.findOne({ phoneNumber }).exec((err, user) => {
-        if (user) {
-            return res.status(400).json({
-                error: 'User with that Phone number Already Exists!'
-            });
-        }
+  User.findOne({ phoneNumber }).exec((err, user) => {
+    if (user) {
+      return res.status(400).json({
+        error: "User with that Phone number Already Exists!",
+      });
+    }
+  });
+
+  let newUser = new User({ phoneNumber, password });
+
+  newUser.save((err, success) => {
+    if (err) {
+      console.log("SIGNUP ERROR", err);
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    res.json({
+      message: "Signup success! Please signin",
     });
-
-    let newUser = new User({ phoneNumber, password });
-
-    newUser.save((err, success) => {
-        if (err) {
-            console.log('SIGNUP ERROR', err);
-            return res.status(400).json({
-                error: err
-            });
-        }
-        res.json({
-            message: 'Signup success! Please signin'
-        });
-    });
+  });
 };
 
 exports.signin = (req, res) => {
@@ -116,4 +111,85 @@ exports.update = (req, res) => {
       res.json(updatedUser);
     });
   });
+};
+
+exports.forgotPassword = async (req, res) => {
+  const user = await User.findOne({
+    number: req.body.number,
+  });
+  if (user) return res.status(400).send("User already registered!");
+  const OTP = otpGenerator.generate(6, {
+    digits: true,
+    alphabets: false,
+    upperCase: false,
+    specialChars: false,
+  });
+
+  const number = req.body.number;
+
+  // const greenwebsms = new URLSearchParams();
+  // greenwebsms.append("token", "05fa33c4cb50c35f4a258e85ccf50509");
+  // greenwebsms.append("to", `+${number}`);
+  // greenwebsms.append("message", `Verification Code ${OTP}`);
+  // axios
+  //   .post("http://api.greenweb.com.bd/api.php", greenwebsms)
+  //   .then((response) => {
+  //     console.log(response.data);
+  //   });
+
+  client.messages
+    .create({
+      body: `Your verification code is: ${OTP}`,
+      messagingServiceSid: "MG74b4e4f0f680fb0d779a4dd046bf13ae",
+      to: number,
+    })
+    .then((message) => console.log(message.sid))
+    .done();
+  const otp = new Otp({ number: number, otp: OTP });
+  const salt = await bcrypt.genSalt(10);
+  otp.otp = await bcrypt.hash(otp.otp, salt);
+  const result = await otp.save();
+  return res.status(200).send("Otp send successfully!");
+};
+
+exports.resetPassword = async (req, res) => {
+  const { phoneNumber, password } = req.body;
+  const otpHolder = await Otp.find({
+    phoneNumber,
+  });
+  if (otpHolder.length === 0)
+    return res.status(400).send("You use an Expired OTP!");
+  const rightOtpFind = otpHolder[otpHolder.length - 1];
+  const validUser = await bcrypt.compare(req.body.otp, rightOtpFind.otp);
+
+  if (rightOtpFind.number === req.body.number && validUser) {
+    if (password) {
+      if (password.length < 4) {
+        return res.status(400).json({
+          error: "Password should be min 4 characters long",
+        });
+      } else {
+        user.password = password;
+      }
+    }
+
+    user.save((err, updatedUser) => {
+      if (err) {
+        console.log("PASSWORD REST ERROR ERROR", err);
+        return res.status(400).json({
+          error: "Password Reset Failed",
+        });
+      }
+      updatedUser.hashed_password = undefined;
+      updatedUser.salt = undefined;
+
+    Otp.deleteMany({
+      number: rightOtpFind.number,
+    });
+      res.json(updatedUser);
+    });
+
+  } else {
+    return res.status(400).send("Your OTP was wrong!");
+  }
 };
