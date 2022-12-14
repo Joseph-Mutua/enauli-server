@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { ObjectId } = mongoose.Schema;
 const crypto = require("crypto");
 
 // user Schema
@@ -16,7 +15,6 @@ const userSchema = new mongoose.Schema(
       required: true
     },
     salt: String, //Define strength of the hashing
-    // saccos: [[{ type: ObjectId, ref: "Sacco" }]],
     resetPasswordLink: {
       data: String,
       default: "",
