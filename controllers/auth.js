@@ -1,6 +1,18 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
+const twilioAccountSid = process.env.TWILIO_SID;
+const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+const client = require("twilio")(twilioAccountSid, twilioAuthToken);
+
+client.messages
+  .create({
+    body: "yOOOOO",
+    messagingServiceSid: "MG74b4e4f0f680fb0d779a4dd046bf13ae",
+    to: "+254713453630",
+  })
+  .then((message) => console.log(message.sid))
+  .done();
 
 
 exports.signup = (req, res) => {
