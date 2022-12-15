@@ -37,6 +37,11 @@ app.use(cors());
 
 //Routes middleware
 app.use(authRoutes);
+app.use(saccoRoutes);
+app.use(officialRoutes);
+app.use(stationRoutes);
+app.use(vehicleRoutes);
+app.use(operatorRoutes);
 
 //Port
 const port = process.env.PORT;

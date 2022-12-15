@@ -49,7 +49,7 @@ exports.update = async (req, res) => {
 
 exports.remove = async (req, res) => {
   try {
-    const deleted = await Category.findOneAndDelete({ slug: req.params.slug });
+    const deleted = await Sacco.findOneAndDelete({ slug: req.params.slug });
     res.json(deleted);
   } catch (err) {
     console.log(err);
