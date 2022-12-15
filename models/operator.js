@@ -15,7 +15,13 @@ const operatorSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
-    parent: { type: ObjectId, ref: "Vehicle", required: true },
+    slug: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      index: true,
+    },
+    parent: { type: ObjectId, ref: "Vehicle" },
   },
   { timestamps: true }
 );

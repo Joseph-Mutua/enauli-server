@@ -21,7 +21,7 @@ const stationSchema = new mongoose.Schema(
       lowercase: true,
       index: true,
     },
-    parent: { type: ObjectId, ref: "Sacco", required: true },
+    parent: { type: ObjectId, ref: "Sacco", },
   },
   { timestamps: true }
 );

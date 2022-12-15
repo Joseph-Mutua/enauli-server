@@ -4,7 +4,7 @@ const slugify = require("slugify");
 exports.create = async (req, res) => {
   try {
     const { name, phoneNumber } = req.body;
-    const operator = await new Official({
+    const operator = await new Operator({
       name,
       phoneNumber,
       slug: slugify(name).toLowerCase(),

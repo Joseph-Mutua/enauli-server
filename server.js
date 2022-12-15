@@ -13,6 +13,7 @@ const officialRoutes = require("./routes/officialRoutes");
 const stationRoutes = require("./routes/stationRoutes");
 const vehicleRoutes = require("./routes/vehicleRoutes");
 const operatorRoutes = require("./routes/operatorRoutes");
+const chargeRoutes = require("./routes/chargeRoutes")
 //app
 const app = express();
 
@@ -42,7 +43,7 @@ app.use(officialRoutes);
 app.use(stationRoutes);
 app.use(vehicleRoutes);
 app.use(operatorRoutes);
-
+app.use(chargeRoutes)
 //Port
 const port = process.env.PORT;
 

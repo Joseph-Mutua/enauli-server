@@ -12,9 +12,9 @@ const chargeSchema = new mongoose.Schema(
       type: Number,
       default: 0.0,
     },
-    parent: { type: ObjectId, ref: "Sacco", required: true },
+    parent: { type: ObjectId, ref: "Sacco" },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Balance", chargeSchema);
+module.exports = mongoose.model("Charge", chargeSchema);

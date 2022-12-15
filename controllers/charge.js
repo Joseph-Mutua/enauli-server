@@ -21,7 +21,7 @@ exports.update = async (req, res) => {
   const { type, amount } = req.body;
 
   try {
-    const updated = await Station.findOneAndUpdate(
+    const updated = await Charge.findOneAndUpdate(
       { slug: req.params.slug },
       { type, amount, slug: slugify(type) },
       { new: true }

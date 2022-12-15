@@ -17,6 +17,7 @@ const saccoSchema = new mongoose.Schema(
       lowercase: true,
       index: true,
     },
+    parent: { type: ObjectId, ref: "User",},
   },
   { timestamps: true }
 );
